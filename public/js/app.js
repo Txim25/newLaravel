@@ -5594,7 +5594,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 
@@ -5602,7 +5601,7 @@ __webpack_require__.r(__webpack_exports__);
   name: 'tagsComponent',
   template: 'tagsComponent',
   mounted: function mounted() {
-    console.log('Component mounted.');
+    //console.log('Component mounted.');
     this.getTags();
   },
   data: function data() {
@@ -5643,7 +5642,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       //console.log("gridStart");
-      console.log(tags);
+      //console.log(tags);
       var grid = document.querySelector('.grid'); //Limpiamos el HTML del interior del grid para evitar duplicados
 
       grid.innerHTML = "";
@@ -5659,6 +5658,7 @@ __webpack_require__.r(__webpack_exports__);
         var newTag = {
           name: cat,
           categoria: cat,
+          esPortada: cat,
           imagen: "/js/img/" + cat + ".png"
         };
         items.push(_this.generarTag(newTag));
@@ -5684,7 +5684,7 @@ __webpack_require__.r(__webpack_exports__);
       grid.addEventListener('click', function (event) {
         // filter for grid-item clicks
         if (event.target.classList.contains('grid-item')) {
-          console.log(event);
+          //console.log(event);
           event.target.classList.toggle('grid-item--large');
         } //Agregamos la funcionalidad al Modal 
         // $('#editModal').on('show.bs.modal', function (event) {
@@ -5700,9 +5700,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
         pckry.layout();
+      }); //Evento para el botón de editar cada Tag anadimos el evento click y touchstart para que sea efectivo en pantallas moviles
+
+      $('.esPortada').on('touchstart click', function (event) {
+        _this.lanzarModalCrear(event);
       }); //Evento para el botón de editar cada Tag
 
-      $('.btnGridElem').click(function (event) {
+      $('.tagCat').on('touchstart click', function (event) {
         _this.lanzarModalEditar(event);
       });
     },
@@ -5723,17 +5727,31 @@ __webpack_require__.r(__webpack_exports__);
       var wRand = Math.random();
       var hRand = Math.random();
       var widthClass = wRand > 0.85 ? 'grid-item--width3' : wRand > 0.7 ? 'grid-item--width2' : '';
-      var heightClass = hRand > 0.85 ? 'grid-item--height3' : hRand > 0.5 ? 'grid-item--height2' : '';
-      item.innerHTML = "<button @click='lanzarModalEditar(event)' class='btn btn-secondary btnGridElem'>...</button>"; //Creamos seteamos e insertamos el titulo del tag en el grid-item
+      var heightClass = hRand > 0.85 ? 'grid-item--height3' : hRand > 0.5 ? 'grid-item--height2' : ''; //console.log(tag.esPortada)
+      //Distinguimos entre tags de portada de categorias y tags de enlace para crear el botón correcto
 
-      var link = document.createElement('a');
-      link.setAttribute('href', tag.enlace);
-      var tituloItem = document.createElement('span');
-      tituloItem.classList.add('badge');
-      tituloItem.classList.add('badge-dark');
-      tituloItem.innerHTML = tag.name;
-      link.appendChild(tituloItem);
-      item.appendChild(link); //Creamos un div que contendrá la imagen centrada, la imagen y lo añadimos al item-grid
+      if (tag.esPortada != undefined) {
+        item.innerHTML = "<button class='btn btn-secondary btnGridElem esPortada'>...</button>";
+        item.id = tag.categoria;
+        var tituloItem = document.createElement('span');
+        tituloItem.classList.add('badge');
+        tituloItem.classList.add('badge-dark');
+        tituloItem.innerHTML = tag.name;
+        item.appendChild(tituloItem);
+      } else {
+        item.innerHTML = "<button  class='btn btn-secondary btnGridElem tagCat'>...</button>";
+        item.setAttribute('id', tag.id); //Creamos seteamos e insertamos el titulo del tag en el grid-item
+
+        var link = document.createElement('a');
+        link.setAttribute('href', tag.enlace);
+        var tituloItem = document.createElement('span');
+        tituloItem.classList.add('badge');
+        tituloItem.classList.add('badge-dark');
+        tituloItem.innerHTML = tag.name;
+        link.appendChild(tituloItem);
+        item.appendChild(link);
+      } //Creamos un div que contendrá la imagen centrada, la imagen y lo añadimos al item-grid
+
 
       var imgDiv = document.createElement('div'); //Creamos la imagen 
 
@@ -5748,19 +5766,10 @@ __webpack_require__.r(__webpack_exports__);
       imgDiv.appendChild(imgCentered);
       imgDiv.classList.add('imageCenter'); //Agregamos el div con la imagen al item que hemos creado (el tag en si)
 
-      item.appendChild(imgDiv); //creamos el elemento button para los controles del item-grid
-      // var btn = document.createElement('div');
-      // btn.classList.add('btn');
-      // btn.classList.add('btn-secondary');
-      // btn.classList.add('btnGridElem');
-      // btn.innerHTML="...";
-      // btn.innerHTML="<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-pencil-square' viewBox='0 0 16 16'><path d='M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z'/><path fill-rule='evenodd' d='M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z'/></svg>";
-      //item.appendChild(btn);
-      //Seteamos los atributos del item
+      item.appendChild(imgDiv); //Seteamos los atributos del item
 
       item.classList.add('grid-item'); //item.classList.add('col');
 
-      item.setAttribute('id', tag.id);
       item.classList.add(tag.categoria);
 
       if (widthClass != "") {
@@ -5835,7 +5844,7 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     lanzarModalEditar: function lanzarModalEditar(data) {
-      console.log(data);
+      //console.log(data);
       this.datosTag = this.tags.filter(function (x) {
         return x.id == parseInt(data.target.parentElement.id);
       });
@@ -5847,6 +5856,8 @@ __webpack_require__.r(__webpack_exports__);
       $('#editModal').modal('show');
     },
     lanzarModalCrear: function lanzarModalCrear() {
+      var esPortada = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+      //console.log(esPortada);
       this.datosTag = this.datosTag = {
         name: "",
         enlace: "",
@@ -5854,6 +5865,11 @@ __webpack_require__.r(__webpack_exports__);
         imagen: "",
         posicion: ""
       };
+
+      if (esPortada != "") {
+        this.datosTag.categoria = esPortada.target.parentElement.id;
+      }
+
       this.titulo = 'Crear Tag';
       this.btnCrear = false;
       this.btnEditar = true;
@@ -5884,6 +5900,9 @@ __webpack_require__.r(__webpack_exports__);
           });
         }
       });
+    },
+    cierraModal: function cierraModal() {
+      $('#editModal').modal('hide');
     }
   }
 });
@@ -11013,7 +11032,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n* { box-sizing: border-box;\n}\nbody { font-family: sans-serif;\n}\n\n/* ---- grid ---- */\n.grid {\n   /* Efectte cristal en cada un dels grid items*/\n  border : 0px;\n  background-color :#ffffff10;\n  backdrop-filter: blur(2px);\n  -webkit-backdrop-filter: blur(2px);\n  max-width: 1200px;\n}\n\n/* clear fix */\n.grid:after {\n  content: '';\n  display: block;\n  background-color :#ffffff10;\n    backdrop-filter: blur(12px);\n    -webkit-backdrop-filter: blur(12px);\n}\n/* Botones en los elementos del grid e imagen dentro del gridItem */\n.btnGridElem{\n    float:right;\n    position: fixed;\n    right:0;\n    bottom: 0;\n    width:23px;\n    height:23px;\n    padding:0;\n    z-index:2;\n}\n.imageCenter{\n    height:100px;\n    z-index:-1;\n}\n.imagenTag{\n    max-width:60%;\n    max-height:60%;\n}\n/* ---- .grid-item Estilos personalizados para cada categoria \"Buscadores\",\"Educación\",\"Juegos\",\"Herramientas\",\"Compras\",\"Viajes\",\"Videos\",\"Musica\",\"Personal\"---- \nColores generados en consonancia a una paleta de colores según los estandares*/\n.Buscadores {\n  background-color :#11111178;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Educación {\n  background-color :#cb99366b;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Juegos {\n  background-color :#3f69c578;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Herramientas {\n  background-color :#bdb76b91;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Compras {\n  background-color :#f6c4ff85;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Videos {\n  background-color :#e3e38b75;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Musica {\n  background-color :#39c13999;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Personal {\n  background-color :#a9a9dda8;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Bibliografia{\n  background-color :#B0C4DE;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n\n/* ---- .grid-item ---- */\n\n/*Efecto translucido en los elementos y el card*/\n.grid-item {\n  float: left;\n  width:100px;\n  height: 100px;\n  /* backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px); */\n  border: 2px solid hsla(0, 0%, 0%, 0.5);\n  border-radius:4px;\n}\n.grid-item--width2 { width: 200px;\n}\n.grid-item--height2 { height: 200px;\n}\n\n/*Creo la separación entre botones para una mejor apariencia */\n.gutter-sizer { width: 7%;\n}\n\n/**Añado un cambio de estilo al pasar el mouse sobre el elemento, resalto el borde y cambio el cursor */\n.grid-item:hover {\n  border-color: hsla(0, 0%, 100%, 0.5);\n  cursor: move;\n}\n/**Cambio en el estilo del elemento al arrastrarlo, de esta forma diferenciamos claramente que lo estamos moviendo */\n.grid-item.is-dragging,\n.grid-item.is-positioning-post-drag {\n  /* background-color :#ffffff15;\n  backdrop-filter: blur(30px);\n  -webkit-backdrop-filter: blur(30px); */\n  z-index: 2;\n}\n.packery-drop-placeholder {\n  outline: 3px dashed hsla(0, 0%, 0%, 0.5);\n  outline-offset: -6px;\n  transition: transform 0.2s;\n}\n.card{\n    /* La card contenedora también transparente */\n    background-color :#ffffff10;\n    backdrop-filter: blur(2px);\n    -webkit-backdrop-filter: blur(2px);\n}\n\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n* { box-sizing: border-box;\n}\nbody { font-family: sans-serif;\n}\n\n/* ---- grid ---- */\n.grid {\n   /* Efectte cristal en cada un dels grid items*/\n  border : 0px;\n  background-color :#ffffff10;\n  backdrop-filter: blur(2px);\n  -webkit-backdrop-filter: blur(2px);\n  max-width: 1200px;\n}\n\n/* clear fix */\n.grid:after {\n  content: '';\n  display: block;\n  background-color :#ffffff10;\n    backdrop-filter: blur(12px);\n    -webkit-backdrop-filter: blur(12px);\n}\n/* Botones en los elementos del grid e imagen dentro del gridItem */\n.btnGridElem{\n    float:right;\n    position: fixed;\n    right:0;\n    bottom: 0;\n    width:23px;\n    height:23px;\n    padding:0;\n    z-index:3;\n}\n.imageCenter{\n    height:100px;\n    z-index:-1;\n}\n.imagenTag{\n    max-width:60%;\n    max-height:60%;\n}\n/* ---- .grid-item Estilos personalizados para cada categoria \"Buscadores\",\"Educación\",\"Juegos\",\"Herramientas\",\"Compras\",\"Viajes\",\"Videos\",\"Musica\",\"Personal\"---- \nColores generados en consonancia a una paleta de colores según los estandares*/\n.Buscadores {\n  background-color :#11111178;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Educación {\n  background-color :#cb99366b;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Juegos {\n  background-color :#3f69c578;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Herramientas {\n  background-color :#bdb76b91;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Compras {\n  background-color :#f6c4ff85;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Videos {\n  background-color :#e3e38b75;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Musica {\n  background-color :#39c13999;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Personal {\n  background-color :#a9a9dda8;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n.Bibliografia{\n  background-color :#B0C4DE;\n   backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n}\n\n/* ---- .grid-item ---- */\n\n/*Efecto translucido en los elementos y el card*/\n.grid-item {\n  float: left;\n  width:100px;\n  height: 100px;\n  /* backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px); */\n  border: 2px solid hsla(0, 0%, 0%, 0.5);\n  border-radius:4px;\n}\n.grid-item--width2 { width: 200px;\n}\n.grid-item--height2 { height: 200px;\n}\n\n/*Creo la separación entre botones para una mejor apariencia */\n.gutter-sizer { width: 7%;\n}\n\n/**Añado un cambio de estilo al pasar el mouse sobre el elemento, resalto el borde y cambio el cursor */\n.grid-item:hover {\n  border-color: hsla(0, 0%, 100%, 0.5);\n  cursor: move;\n}\n/**Cambio en el estilo del elemento al arrastrarlo, de esta forma diferenciamos claramente que lo estamos moviendo */\n.grid-item.is-dragging,\n.grid-item.is-positioning-post-drag {\n  /* background-color :#ffffff15;\n  backdrop-filter: blur(30px);\n  -webkit-backdrop-filter: blur(30px); */\n  z-index: 2;\n}\n.packery-drop-placeholder {\n  outline: 3px dashed hsla(0, 0%, 0%, 0.5);\n  outline-offset: -6px;\n  transition: transform 0.2s;\n}\n.card{\n    /* La card contenedora también transparente */\n    background-color :#ffffff10;\n    backdrop-filter: blur(2px);\n    -webkit-backdrop-filter: blur(2px);\n}\n\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -47482,106 +47501,122 @@ var render = function () {
                   [_vm._v(_vm._s(_vm.titulo))]
                 ),
                 _vm._v(" "),
-                _vm._m(1),
+                _c(
+                  "button",
+                  {
+                    staticClass: "close",
+                    attrs: {
+                      type: "button",
+                      "data-dismiss": "modal",
+                      "aria-label": "Close",
+                    },
+                    on: { click: _vm.cierraModal },
+                  },
+                  [
+                    _c("span", { attrs: { "aria-hidden": "true" } }, [
+                      _vm._v("×"),
+                    ]),
+                  ]
+                ),
               ]),
               _vm._v(" "),
               _c("div", { staticClass: "modal-body" }, [
                 _c("form", [
                   _c("div", { staticClass: "form-row align-items-center" }, [
-                    _c("div", { staticClass: "col-auto" }, [
-                      _c(
-                        "label",
-                        {
-                          staticClass: "sr-only",
-                          attrs: { for: "nameFormInput" },
-                        },
-                        [_vm._v("Tag")]
-                      ),
+                    _c("div", { staticClass: "col-auto form-group" }, [
+                      _c("label", { attrs: { for: "nameFormInput" } }, [
+                        _vm._v("Tag"),
+                      ]),
                       _vm._v(" "),
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.datosTag.name,
-                            expression: "datosTag.name",
-                          },
-                        ],
-                        staticClass: "form-control mb-2",
-                        attrs: {
-                          type: "text",
-                          id: "nameFormInput",
-                          placeholder: "Nombre del Tag",
-                        },
-                        domProps: { value: _vm.datosTag.name },
-                        on: {
-                          input: function ($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(_vm.datosTag, "name", $event.target.value)
-                          },
-                        },
-                      }),
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-auto" }, [
-                      _c(
-                        "select",
-                        {
+                      _c("div", { staticClass: "input-group mb-2" }, [
+                        _c("input", {
                           directives: [
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.datosTag.categoria,
-                              expression: "datosTag.categoria",
+                              value: _vm.datosTag.name,
+                              expression: "datosTag.name",
                             },
                           ],
-                          staticClass: "form-control",
+                          staticClass: "form-control mb-2",
                           attrs: {
-                            id: "categoriaFormControlSelect1",
-                            placeholder: "Categoria",
+                            type: "text",
+                            id: "nameFormInput",
+                            placeholder: "Nombre del Tag",
                           },
+                          domProps: { value: _vm.datosTag.name },
                           on: {
-                            change: function ($event) {
-                              var $$selectedVal = Array.prototype.filter
-                                .call($event.target.options, function (o) {
-                                  return o.selected
-                                })
-                                .map(function (o) {
-                                  var val = "_value" in o ? o._value : o.value
-                                  return val
-                                })
+                            input: function ($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
                               _vm.$set(
                                 _vm.datosTag,
-                                "categoria",
-                                $event.target.multiple
-                                  ? $$selectedVal
-                                  : $$selectedVal[0]
+                                "name",
+                                $event.target.value
                               )
                             },
                           },
-                        },
-                        _vm._l(_vm.categorias, function (cat) {
-                          return _c("option", [_vm._v(_vm._s(cat))])
                         }),
-                        0
-                      ),
+                      ]),
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "col-auto" }, [
-                      _c(
-                        "label",
-                        {
-                          staticClass: "sr-only",
-                          attrs: { for: "enlaceFormInputGroup" },
-                        },
-                        [_vm._v("Dirección")]
-                      ),
+                    _c("div", { staticClass: "col-auto form-group" }, [
+                      _c("label", { attrs: { for: "nameFormInput" } }, [
+                        _vm._v("Categoria"),
+                      ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "input-group mb-2" }, [
-                        _c("div", { staticClass: "input-group-prepend" }),
-                        _vm._v(" "),
+                        _c(
+                          "select",
+                          {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.datosTag.categoria,
+                                expression: "datosTag.categoria",
+                              },
+                            ],
+                            staticClass: "form-control",
+                            attrs: {
+                              id: "categoriaFormControlSelect1",
+                              placeholder: "Categoria",
+                            },
+                            on: {
+                              change: function ($event) {
+                                var $$selectedVal = Array.prototype.filter
+                                  .call($event.target.options, function (o) {
+                                    return o.selected
+                                  })
+                                  .map(function (o) {
+                                    var val = "_value" in o ? o._value : o.value
+                                    return val
+                                  })
+                                _vm.$set(
+                                  _vm.datosTag,
+                                  "categoria",
+                                  $event.target.multiple
+                                    ? $$selectedVal
+                                    : $$selectedVal[0]
+                                )
+                              },
+                            },
+                          },
+                          _vm._l(_vm.categorias, function (cat) {
+                            return _c("option", [_vm._v(_vm._s(cat))])
+                          }),
+                          0
+                        ),
+                      ]),
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-auto form-group" }, [
+                      _c("label", { attrs: { for: "enlaceFormInputGroup" } }, [
+                        _vm._v("Dirección"),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "input-group mb-2" }, [
                         _c("input", {
                           directives: [
                             {
@@ -47614,19 +47649,12 @@ var render = function () {
                       ]),
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "col-auto" }, [
-                      _c(
-                        "label",
-                        {
-                          staticClass: "sr-only",
-                          attrs: { for: "imagenFormInputGroup" },
-                        },
-                        [_vm._v("Imagen")]
-                      ),
+                    _c("div", { staticClass: "col-auto form-group" }, [
+                      _c("label", { attrs: { for: "imagenFormInputGroup" } }, [
+                        _vm._v("Url Imagen"),
+                      ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "input-group mb-2" }, [
-                        _c("div", { staticClass: "input-group-prepend" }),
-                        _vm._v(" "),
                         _c("input", {
                           directives: [
                             {
@@ -47729,27 +47757,10 @@ var staticRenderFns = [
     return _c("div", { staticClass: "row justify-content-center" }, [
       _c("div", { staticClass: "col-md-12" }, [
         _c("div", { staticClass: "card text-light" }, [
-          _c("div", { staticClass: "grid text-center" }),
+          _c("div", { staticClass: "grid text-center justify-content-center" }),
         ]),
       ]),
     ])
-  },
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass: "close",
-        attrs: {
-          type: "button",
-          "data-dismiss": "modal",
-          "aria-label": "Close",
-        },
-      },
-      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-    )
   },
 ]
 render._withStripped = true

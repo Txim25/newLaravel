@@ -8,7 +8,7 @@
                 <div class="card text-light"> 
                 <!-- DENTRO DEL GRID SE INSERTAN LAS ETIQUETAS RESPONSIVE QUE SE ORDENAN EN RELACIÓN AL TAMAÑO DEL CONTENEDOR PADRE MEDIANTE LA HOJA DE ESTILOS ADJUNTA, LOS ELEMENTOS DEL GRID ESTATICOS SERÁN LOS TOTEMS DE LAS CATEGORIAS Y EL ACCESO A LA BIBLIOGRAFIA-->
                
-                        <div class="grid text-center">
+                        <div class="grid text-center justify-content-center">
                         
                          </div>            
                 </div>
@@ -21,39 +21,38 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="editModalLabel">{{titulo}}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-dismiss="modal" @click="cierraModal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <form>
                             <div class="form-row align-items-center">
-                                <div class="col-auto">
-                                    <label class="sr-only" for="nameFormInput">Tag</label>
+                                <div class="col-auto form-group">
+                                    <label for="nameFormInput">Tag</label>
+                                     <div class="input-group mb-2">
                                     <input type="text" class="form-control mb-2" id="nameFormInput" placeholder="Nombre del Tag" v-model="datosTag.name">
+                                     </div>
                                 </div>
 
-                                <div class="col-auto">
+                                <div class="col-auto form-group">
+                                     <label for="nameFormInput">Categoria</label>
+                                      <div class="input-group mb-2">
                                     <select class="form-control" id="categoriaFormControlSelect1" placeholder="Categoria" v-model="datosTag.categoria">
                                         <option v-for="cat in categorias">{{cat}}</option>
                                     </select>
+                                      </div>
                                 </div>
 
-                                <div class="col-auto">
-                                    <label class="sr-only" for="enlaceFormInputGroup">Dirección</label>
+                                <div class="col-auto form-group">
+                                    <label for="enlaceFormInputGroup">Dirección</label>
                                     <div class="input-group mb-2">
-                                        <div class="input-group-prepend">
-                                        <!-- <div class="input-group-text">@</div> -->
-                                        </div>
-                                        <input type="text" class="form-control" id="enlaceFormInputGroup" placeholder="Dirección" v-model="datosTag.enlace">
+                                        <input type="text"  class="form-control" id="enlaceFormInputGroup" placeholder="Dirección" v-model="datosTag.enlace">
                                     </div>
                                 </div>
-                                <div class="col-auto">
-                                    <label class="sr-only" for="imagenFormInputGroup">Imagen</label>
+                                <div class="col-auto form-group">
+                                    <label for="imagenFormInputGroup">Url Imagen</label>
                                     <div class="input-group mb-2">
-                                        <div class="input-group-prepend">
-                                        <!-- <div class="input-group-text">@</div> -->
-                                        </div>
                                         <input type="text" class="form-control" id="imagenFormInputGroup" placeholder="Imagen" v-model="datosTag.imagen">
                                     </div>
                                 </div>
@@ -117,7 +116,7 @@ body { font-family: sans-serif; }
     width:23px;
     height:23px;
     padding:0;
-    z-index:2;
+    z-index:3;
 }
 .imageCenter{
     height:100px;
@@ -233,7 +232,7 @@ Colores generados en consonancia a una paleta de colores según los estandares*/
         name: 'tagsComponent',
         template: 'tagsComponent',
         mounted() {
-            console.log('Component mounted.');
+            //console.log('Component mounted.');
             this.getTags();
             
              
@@ -274,7 +273,7 @@ Colores generados en consonancia a una paleta de colores según los estandares*/
             
             gridStart(tags){
                 //console.log("gridStart");
-                console.log(tags);
+                //console.log(tags);
 
                 var grid = document.querySelector('.grid');
                 //Limpiamos el HTML del interior del grid para evitar duplicados
@@ -294,7 +293,8 @@ Colores generados en consonancia a una paleta de colores según los estandares*/
                 this.categorias.forEach(cat=>{
                     var newTag = {
                        name:cat,
-                       categoria:cat, 
+                       categoria:cat,
+                       esPortada:cat, 
                        imagen:"/js/img/"+cat+".png",   
                     }
                     items.push(this.generarTag(newTag));
@@ -329,7 +329,7 @@ Colores generados en consonancia a una paleta de colores según los estandares*/
                 grid.addEventListener( 'click', function( event ) {
                 // filter for grid-item clicks
                     if ( event.target.classList.contains('grid-item') ) {
-                        console.log(event);
+                        //console.log(event);
                         event.target.classList.toggle('grid-item--large');
                     }
                     //Agregamos la funcionalidad al Modal 
@@ -349,8 +349,10 @@ Colores generados en consonancia a una paleta de colores según los estandares*/
                 pckry.layout();
                 
                 });
-               //Evento para el botón de editar cada Tag
-                    $('.btnGridElem').click((event)=>{this.lanzarModalEditar(event);});
+               //Evento para el botón de editar cada Tag anadimos el evento click y touchstart para que sea efectivo en pantallas moviles
+                    $('.esPortada').on('touchstart click',(event)=>{this.lanzarModalCrear(event);});
+                    //Evento para el botón de editar cada Tag
+                    $('.tagCat').on('touchstart click',(event)=>{this.lanzarModalEditar(event);});
 
             },
             getTags(){
@@ -373,17 +375,35 @@ Colores generados en consonancia a una paleta de colores según los estandares*/
                 var hRand = Math.random();
                 var widthClass = wRand > 0.85 ? 'grid-item--width3' : wRand > 0.7 ? 'grid-item--width2' : '';
                 var heightClass = hRand > 0.85 ? 'grid-item--height3' : hRand > 0.5 ? 'grid-item--height2' : '';
-                item.innerHTML="<button @click='lanzarModalEditar(event)' class='btn btn-secondary btnGridElem'>...</button>"
+                //console.log(tag.esPortada)
+                //Distinguimos entre tags de portada de categorias y tags de enlace para crear el botón correcto
+                if(tag.esPortada!=undefined){
+                     item.innerHTML=`<button class='btn btn-secondary btnGridElem esPortada'>...</button>`;
+                     item.id= tag.categoria;
+                     var tituloItem = document.createElement('span');
+                    tituloItem.classList.add('badge');
+                    tituloItem.classList.add('badge-dark');
+                    tituloItem.innerHTML=tag.name;
+                    item.appendChild(tituloItem);
+                     
+                }else{
+                    item.innerHTML="<button  class='btn btn-secondary btnGridElem tagCat'>...</button>";
+                     item.setAttribute('id',tag.id);
+                     //Creamos seteamos e insertamos el titulo del tag en el grid-item
+                    var link = document.createElement('a');
+                    link.setAttribute('href',tag.enlace);
+                    var tituloItem = document.createElement('span');
+                    tituloItem.classList.add('badge');
+                    tituloItem.classList.add('badge-dark');
+                    tituloItem.innerHTML=tag.name;
+                    link.appendChild(tituloItem);
+                    item.appendChild(link);
 
-                //Creamos seteamos e insertamos el titulo del tag en el grid-item
-                var link = document.createElement('a');
-                link.setAttribute('href',tag.enlace);
-                var tituloItem = document.createElement('span');
-                tituloItem.classList.add('badge');
-                tituloItem.classList.add('badge-dark');
-                tituloItem.innerHTML=tag.name;
-                link.appendChild(tituloItem);
-                item.appendChild(link);
+
+                }
+                
+
+                
 
                 //Creamos un div que contendrá la imagen centrada, la imagen y lo añadimos al item-grid
                 var imgDiv = document.createElement('div');
@@ -399,20 +419,10 @@ Colores generados en consonancia a una paleta de colores según los estandares*/
                 //Agregamos el div con la imagen al item que hemos creado (el tag en si)
                 item.appendChild(imgDiv);
 
-                //creamos el elemento button para los controles del item-grid
-
-                // var btn = document.createElement('div');
-                // btn.classList.add('btn');
-                // btn.classList.add('btn-secondary');
-                // btn.classList.add('btnGridElem');
-                // btn.innerHTML="...";
-                // btn.innerHTML="<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-pencil-square' viewBox='0 0 16 16'><path d='M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z'/><path fill-rule='evenodd' d='M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z'/></svg>";
-                //item.appendChild(btn);
-
                 //Seteamos los atributos del item
                 item.classList.add('grid-item');
                 //item.classList.add('col');
-                item.setAttribute('id',tag.id)
+               
                 item.classList.add(tag.categoria);
                 if(widthClass!=""){item.classList.add( widthClass);}
                 if(heightClass!=""){item.classList.add( heightClass);}
@@ -474,7 +484,7 @@ Colores generados en consonancia a una paleta de colores según los estandares*/
                 });
             },
              lanzarModalEditar(data){
-                console.log(data);
+                //console.log(data);
                 this.datosTag=this.tags.filter(x=>x.id==parseInt(data.target.parentElement.id));
                 this.datosTag=this.datosTag[0];
                 //this.datosTag= {id:data.id,name:data.name, enlace: data.enlace, categoria:data.categoria, imagen: data.imagen, posicion:data.posicion};
@@ -484,8 +494,12 @@ Colores generados en consonancia a una paleta de colores según los estandares*/
                 $('#editModal').modal('show');
             },
 
-                lanzarModalCrear(){
+                lanzarModalCrear(esPortada=""){
+                    //console.log(esPortada);
                 this.datosTag=  this.datosTag= {name:"", enlace:"", categoria:"", imagen:"", posicion:""};
+                if(esPortada!=""){
+                        this.datosTag.categoria=esPortada.target.parentElement.id;
+                    }
                 this.titulo = 'Crear Tag';
                 this.btnCrear = false;
                 this.btnEditar = true;
@@ -516,6 +530,9 @@ Colores generados en consonancia a una paleta de colores según los estandares*/
                     }
                 })
                 
+            },
+            cierraModal(){
+                $('#editModal').modal('hide')
             }
            
         },

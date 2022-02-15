@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'S.B.R 2ºDAW') }}</title>
 
     <!-- Scripts -->
     <script src="js/jquery-3.3.1.min.js"></script>
@@ -27,12 +27,16 @@
     <link href="{{ asset('css/main.css') }}" rel="stylesheet">
 </head>
 <body>
-    <div id="app" style="background-image:url('js/img/background1.jpg');background-color:AliceBlue;background-size: cover;background-repeat: no-repeat;background-position: center;">
+<!-- style="background-image:url('js/img/background1.jpg');background-color:AliceBlue;background-size: 100%;background-repeat: no-repeat;background-position: center;" -->
+<div id="background">
+    <img class="background1" src="js/img/background1.jpg" style="width: 100vw;height: 100vh;position: fixed;left: 0px;top: 0px;z-index: -1;" class="stretch" alt="" />
+</div>
+    <div id="app" >
     <!-- Prescindimos de la clas bg-color para que la nav bar sea transparente -->
         <nav class="navbar navbar-expand-md navbar-light  shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+                <span class="badge badge-secondary"><strong> {{ config('app.name', 'S.B.R 2ºDAW') }}</strong></span>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -89,12 +93,11 @@
     </div>
 </body>
 <script type="text/javascript">
-
-     console.log("Hello");
+    //Escript personalizado par cambiar el fono de pantalla aleatoriamente cada 2 minutos
      let timerId = setInterval(() =>{
-         console.log($('#app'));
+         
              var randomBack = Math.floor(Math.random() * (8 - 1)) + 1;
-            $('#app').attr('style',"background-image:url('js/img/background"+randomBack+".jpg');background-color:AliceBlue;background-repeat: no-repeat;background-size: contain;");}, 240000);
+            $('.background1').attr('src',"js/img/background"+randomBack+".jpg");}, 120000);
 
    
 </script>
