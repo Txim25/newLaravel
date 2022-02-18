@@ -64,21 +64,21 @@ class HomeController extends Controller
         $userId = Auth::id();
         // $fecha = new DateTime();
 
-        $data= $request()->validate([
+        // $data= $request()->validate([
             
-            'name' => ['required', 'string', 'max:255'],
-            'enlace' => ['required', 'string', 'max:255'],
-            'categoria' => ['required', 'string'],
-            'imagen' => [],
-            'posicion' => ['int'],
+        //     'name' => ['required', 'string', 'max:255'],
+        //     'enlace' => ['required', 'string', 'max:255'],
+        //     'categoria' => ['required', 'string'],
+        //     'imagen' => [],
+        //     'posicion' => ['int'],
             
-        ]);
+        // ]);
         $id->update([
-            'name' => $data['name'],
-            'enlace' => $data['enlace'],
-            'categoria' => $data['categoria'],
-            'imagen' => $data['imagen'],
-            'posicion' => $data['posicion'],
+            'name' => $request['name'],
+            'enlace' => $request['enlace'],
+            'categoria' => $request['categoria'],
+            'imagen' => $request['imagen'],
+            'posicion' => $request['posicion'],
         ]);
       
 
